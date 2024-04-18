@@ -1,0 +1,3 @@
+[submodule "components/WeatherIcons"]
+	path = components/WeatherIcons
+	url = https://github.com/jasonthorsness/WeatherIcons
