@@ -4,39 +4,28 @@ import { Icons } from "components/weatherIcon";
 import { formatDateForAPI, getAndCacheData } from "lib/weather";
 import { notFound, redirect } from "next/navigation";
 import { lkToIndex } from "lib/lk";
-import { getNow, getServerTS } from "lib/ts";
 import { getLocalizedOffsetDate } from "lib/tz";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 
-function getInfoFromParams(lk: string, ts: string): [number, Date] {
+function getInfoFromParams(lk: string): [number, Date] {
   let lki = parseInt(lk);
   if (!isFinite(lki) || lki < 0) {
-    notFound();
-  }
-  let tsi = parseInt(ts);
-  if (!isFinite(tsi) || tsi < 0) {
     notFound();
   }
   let index = lkToIndex(lki);
   if (!index) {
     notFound();
   }
-  let rawNow = getNow(tsi);
-  if (rawNow == null) {
-    redirect(`/s/${lk}/${getServerTS()}`);
-  }
+  const rawNow = new Date();
   const now = getLocalizedOffsetDate(rawNow, index, false);
   return [lki, now];
 }
 
 /* eslint @next/next/no-img-element: 0 */
-export async function GET(
-  _: NextRequest,
-  { params: { lk, ts } }: { params: { lk: string; ts: string } }
-) {
-  if (lk === "ROOT_IMAGE" && ts === "0") {
+export async function GET(_: NextRequest, { params: { lk } }: { params: { lk: string } }) {
+  if (lk === "ROOT_IMAGE") {
     return new ImageResponse(
       (
         <div
@@ -80,7 +69,7 @@ export async function GET(
     );
   }
 
-  const [lki, today] = getInfoFromParams(lk, ts);
+  const [lki, today] = getInfoFromParams(lk);
 
   const daysData = await getAndCacheData("vcDays", lki, [formatDateForAPI(today)]);
 

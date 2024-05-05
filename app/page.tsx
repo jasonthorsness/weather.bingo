@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: `Fast weather with history`,
     images: [
       {
-        url: `https://www.weather.bingo/s/ROOT_IMAGE/0`,
+        url: `https://www.weather.bingo/s/ROOT_IMAGE`,
         alt: "weather.bingo",
         width: 1200,
         height: 630,
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: [
       {
-        url: `https://www.weather.bingo/s/ROOT_IMAGE/0`,
+        url: `https://www.weather.bingo/s/ROOT_IMAGE`,
         alt: "weather.bingo",
         width: 1200,
         height: 630,

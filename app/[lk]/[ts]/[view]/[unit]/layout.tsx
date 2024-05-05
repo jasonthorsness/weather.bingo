@@ -35,6 +35,7 @@ export async function generateMetadata({
 }) {
   const name = await getNameFromParams(lk);
   const url = `https://weather.bingo/${lk}/${ts}/${view}/${unit}`;
+  const imgURL = `https://weather.bingo/s/${lk}`;
   return {
     title: "weather.bingo",
     description: `Weather for ${name}`,
@@ -45,7 +46,7 @@ export async function generateMetadata({
       description: `Weather for ${name}`,
       images: [
         {
-          url: url,
+          url: imgURL,
           alt: "weather.bingo",
           width: 1200,
           height: 630,
@@ -57,7 +58,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       images: [
         {
-          url: url,
+          url: imgURL,
           alt: "weather.bingo",
           width: 1200,
           height: 630,
