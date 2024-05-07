@@ -72,7 +72,7 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <Peer id="test2" target={`/`} delay={250} />
+        <Peer id="test2" target={`/`} delay={750} />
         <div className="absolute top-0 w-full h-full hidden peer-checked/test2:block py-[20px] pr-4">
           <div className="bg-black dark:bg-white border-[20px] rounded-xl opacity-20 border-black dark:border-white w-full h-full">
             &nbsp;

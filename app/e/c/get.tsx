@@ -11,7 +11,12 @@ const flexes: { [key: string]: FlexSearch.Index } = {};
 
 export default async function GET(limit: number, cities: string[], lks: number[], r: NextRequest) {
   const origin = r.headers.get("origin");
-  if (origin != null && origin != "https://weather.bingo" && origin != "http://localhost:3000") {
+  if (
+    origin != null &&
+    origin != "https://weather.bingo" &&
+    origin != "http://localhost:3000" &&
+    origin != "http://www.jasonthorsness.com"
+  ) {
     const response = NextResponse.json({ error: "bad origin" }, { status: 400 });
     return response;
   }

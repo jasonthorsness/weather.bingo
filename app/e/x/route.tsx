@@ -17,7 +17,12 @@ let lkToIndex: { [key: number]: number } = {};
 // Find the nearest 10 cities to a provided latitude and longitude
 export async function GET(r: NextRequest) {
   const origin = r.headers.get("origin");
-  if (origin != null && origin != "https://weather.bingo" && origin != "http://localhost:3000") {
+  if (
+    origin != null &&
+    origin != "https://weather.bingo" &&
+    origin != "http://localhost:3000" &&
+    origin != "http://www.jasonthorsness.com"
+  ) {
     const response = NextResponse.json({ error: "bad origin" }, { status: 400 });
     return response;
   }
