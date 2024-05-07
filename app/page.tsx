@@ -37,7 +37,6 @@ export const metadata: Metadata = {
 export default async function Home() {
   return (
     <>
-      <Peer id="test3" target={`/`} delay={0} />
       <div className="px-2 peer-checked/test3:invisible">
         <ResolvedAddress name="Search by City Name" />
       </div>
@@ -73,7 +72,7 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <Peer id="test2" target={`/`} delay={750} />
+        <Peer id="test2" target={`/`} delay={250} />
         <div className="absolute top-0 w-full h-full hidden peer-checked/test2:block py-[20px] pr-4">
           <div className="bg-black dark:bg-white border-[20px] rounded-xl opacity-20 border-black dark:border-white w-full h-full">
             &nbsp;
