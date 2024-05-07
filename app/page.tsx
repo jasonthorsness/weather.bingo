@@ -37,7 +37,8 @@ export const metadata: Metadata = {
 export default async function Home() {
   return (
     <>
-      <div className="px-2">
+      <Peer id="test3" target={`/`} delay={0} />
+      <div className="px-2 peer-checked/test3:invisible">
         <ResolvedAddress name="Search by City Name" />
       </div>
       <div className="px-2 pt-4 relative">

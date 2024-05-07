@@ -3,7 +3,7 @@ import Share from "components/share";
 import SoftLink from "components/softLink";
 import Nav from "./nav";
 
-import { Azeret_Mono } from "next/font/google";
+import { monoFont } from "app/monoFont";
 
 import { getName } from "app/e/getName";
 
@@ -19,14 +19,6 @@ async function getNameFromParams(lk: string) {
   }
   return name;
 }
-
-const font = Azeret_Mono({
-  weight: "400",
-  subsets: ["latin"],
-  preload: true,
-  display: "block",
-  fallback: ["mono"],
-});
 
 export async function generateMetadata({
   params: { lk, ts, view, unit },
@@ -86,8 +78,12 @@ export default function Layout({
         <div className="flex flex-row-reverse items-center pr-2">
           <Share location={url} />
         </div>
-        {view === "threeday" && <div className={`col-span-4 ${font.className}`}>{threeday}</div>}
-        {view === "calendar" && <div className={`col-span-4 ${font.className}`}>{calendar}</div>}
+        {view === "threeday" && (
+          <div className={`col-span-4 ${monoFont.className}`}>{threeday}</div>
+        )}
+        {view === "calendar" && (
+          <div className={`col-span-4 ${monoFont.className}`}>{calendar}</div>
+        )}
         <div className="pb-2 px-2 relative col-span-4">
           <p className="text-xs text-right pt-2 pr-2 font-sans">
             Temperature in °{unit == "f" ? "F" : "C"}

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
-import { Azeret_Mono } from "next/font/google";
+import { monoFont } from "app/monoFont";
 
 import Header from "components/header";
 import Footer from "components/footer";
@@ -12,14 +11,6 @@ export const runtime = "edge";
 export const metadata: Metadata = {
   metadataBase: new URL("https://weather.bingo"),
 };
-
-const font = Azeret_Mono({
-  weight: "400",
-  subsets: ["latin"],
-  preload: true,
-  display: "block",
-  fallback: ["mono"],
-});
 
 export default function RootLayout({
   children,
@@ -42,10 +33,9 @@ export default function RootLayout({
           <div>
             <Header />
             {children}
-            <div className={`${font.className} invisible`}>&nbsp;</div>
+            <div className={`${monoFont.className} invisible`}>&nbsp;</div>
           </div>
           <Footer />
-          <SpeedInsights />
         </>
       </body>
     </html>

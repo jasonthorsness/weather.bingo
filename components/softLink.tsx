@@ -1,19 +1,21 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 export default function Component({
   children,
   className,
   href,
+  prefetch,
 }: {
   children: React.ReactNode;
   className?: string;
   href: string;
+  prefetch?: boolean;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const onClick = useCallback(
     (e: any) => {
@@ -28,9 +30,15 @@ export default function Component({
     [href, router]
   );
 
+  useEffect(() => {
+    if (prefetch) {
+      router.prefetch(href);
+    }
+  }, [href, prefetch, router]);
+
   return (
     <a
-      target="_blank"
+      target="_self"
       href={href}
       rel="noopener noreferrer"
       onClick={onClick}

@@ -10,6 +10,11 @@ const cacheControlHeader = "public, max-age=600, s-maxage=600, stale-while-reval
 const flexes: { [key: string]: FlexSearch.Index } = {};
 
 export default async function GET(limit: number, cities: string[], lks: number[], r: NextRequest) {
+  const origin = r.headers.get("origin");
+  if (origin != null && origin != "https://weather.bingo" && origin != "http://localhost:3000") {
+    const response = NextResponse.json({ error: "bad origin" }, { status: 400 });
+    return response;
+  }
   const requestURL = new URL(r.url);
   const idxs = requestURL.searchParams.get("idx");
   if (idxs != null) {

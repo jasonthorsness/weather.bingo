@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import SoftLink from "components/softLink";
 import { getServerTS } from "lib/ts";
 import { getUserPrefersFahrenheitFromTimezone } from "lib/tz";
 
@@ -29,8 +29,8 @@ export default function Component({
   }, [href]);
 
   return (
-    <Link href={actualHref} prefetch={!actualHref.includes("00000")} className={className}>
+    <SoftLink href={actualHref} prefetch={!actualHref.includes("00000")} className={className}>
       {children}
-    </Link>
+    </SoftLink>
   );
 }
