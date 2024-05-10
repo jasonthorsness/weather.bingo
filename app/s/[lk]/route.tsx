@@ -1,3 +1,4 @@
+import { waitUntil } from "@vercel/functions";
 import { ImageResponse } from "next/og";
 import { type NextRequest } from "next/server";
 import { Icons } from "components/weatherIcon";
@@ -71,7 +72,12 @@ export async function GET(_: NextRequest, { params: { lk } }: { params: { lk: st
 
   const [lki, today] = getInfoFromParams(lk);
 
-  const daysData = await getAndCacheData("vcDays", lki, [formatDateForAPI(today)]);
+  const [daysData, toCache] = await getAndCacheData("vcDays", lki, [formatDateForAPI(today)]);
+
+  if (toCache) {
+    console.log("caching");
+    waitUntil(toCache);
+  }
 
   const dayData = daysData.days[0];
   const icon = Icons[dayData.icon];

@@ -126,7 +126,7 @@ export async function getAndCacheData(
   collectionName: "vcDays" | "vcHours",
   lk: number,
   datesNeeded: string[]
-) {
+): Promise<[LoadWeatherVisualCrossingResponse, Promise<any> | null]> {
   let resultsArray = await getCache(collectionName, lk, datesNeeded);
 
   const keyed: { [key: string]: LoadWeatherVisualCrossingDay } = {};
@@ -137,10 +137,13 @@ export async function getAndCacheData(
 
   if (Object.keys(keyed).length === datesNeeded.length) {
     console.log("got all " + collectionName);
-    return {
-      days: resultsArray,
-      daysKeyed: keyed,
-    };
+    return [
+      {
+        days: resultsArray,
+        daysKeyed: keyed,
+      },
+      null,
+    ];
   }
 
   const minRange = new Date(datesNeeded[0]);
@@ -193,7 +196,7 @@ export async function getAndCacheData(
     keyed[result.datetime] = result;
   });
 
-  await putCache(collectionName, lk, data);
+  const toCache = putCache(collectionName, lk, data);
 
   let transformedData: LoadWeatherVisualCrossingResponse = {
     ...data,
@@ -202,5 +205,5 @@ export async function getAndCacheData(
   transformedData.days = (resultsArray as LoadWeatherVisualCrossingDay[]).concat(
     transformedData.days
   );
-  return transformedData;
+  return [transformedData, toCache];
 }

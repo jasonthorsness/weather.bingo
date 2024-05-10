@@ -1,3 +1,4 @@
+import { waitUntil } from "@vercel/functions";
 import Peer from "components/peer";
 import ThreeDay from "components/threeDay";
 import { formatDateForAPI, getAndCacheData } from "lib/weather";
@@ -25,11 +26,15 @@ export default async function Calendar({
   const tomorrow = new Date();
   tomorrow.setTime(adjustedToday.getTime() + 1 * 24 * 60 * 60 * 1000);
 
-  const hoursData = await getAndCacheData("vcHours", lki, [
+  const [hoursData, toCache] = await getAndCacheData("vcHours", lki, [
     formatDateForAPI(yesterday),
     formatDateForAPI(adjustedToday),
     formatDateForAPI(tomorrow),
   ]);
+  if (toCache) {
+    console.log("caching");
+    waitUntil(toCache);
+  }
 
   return (
     <>

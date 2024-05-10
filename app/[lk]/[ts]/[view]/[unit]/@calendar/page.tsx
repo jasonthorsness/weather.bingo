@@ -1,3 +1,4 @@
+import { waitUntil } from "@vercel/functions";
 import Peer from "components/peer";
 import Weeks from "components/weeks";
 import { getInfoFromParams } from "../params";
@@ -30,7 +31,11 @@ export default async function Calendar({
   }
   minRange.setTime(today.getTime() - (14 + today.getDay()) * 24 * 60 * 60 * 1000);
 
-  const daysData = await getAndCacheData("vcDays", lki, datesNeeded);
+  const [daysData, toCache] = await getAndCacheData("vcDays", lki, datesNeeded);
+  if (toCache) {
+    console.log("caching");
+    waitUntil(toCache);
+  }
 
   return (
     <>
