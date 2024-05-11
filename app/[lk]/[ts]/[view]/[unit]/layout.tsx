@@ -26,16 +26,17 @@ export async function generateMetadata({
   params: { lk: string; ts: string; view: string; unit: string };
 }) {
   const name = await getNameFromParams(lk);
+  const simpleName = name.split(",")[0];
   const url = `https://weather.bingo/${lk}/${ts}/${view}/${unit}`;
   const imgURL = `https://weather.bingo/s/${lk}`;
   return {
-    title: "weather.bingo",
-    description: `Weather for ${name}`,
+    title: `${simpleName}`,
+    description: `${simpleName} weather`,
     openGraph: {
       type: "website",
       url: url,
       title: "weather.bingo",
-      description: `Weather for ${name}`,
+      description: `${simpleName} weather`,
       images: [
         {
           url: imgURL,
