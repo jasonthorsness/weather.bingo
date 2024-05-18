@@ -5,7 +5,7 @@ function tsToUnixMilliseconds(ts: number) {
   return (ts * tsPeriodSeconds + tsOffset) * 1000;
 }
 
-function unixMillisecondsToTS(v: number) {
+export function unixMillisecondsToTS(v: number) {
   return Math.round((v / 1000 - tsOffset) / tsPeriodSeconds);
 }
 
