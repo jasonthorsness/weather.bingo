@@ -65,7 +65,10 @@ export async function GET(r: NextRequest) {
     url.search = `idx=${index}`;
     const raw = await fetch(url);
     const cities = (await raw.json()) as string[];
-    return NextResponse.json(cities[0]);
+    const response = NextResponse.json(cities[0]);
+    response.headers.set("Cache-Control", cacheControlHeader);
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    return response;
   }
 
   const nearest = around(kdBush as any, lka[1], lka[0], 10, undefined);
@@ -110,5 +113,6 @@ export async function GET(r: NextRequest) {
     })
   );
   response.headers.set("Cache-Control", cacheControlHeader);
+  response.headers.set("Access-Control-Allow-Origin", "*");
   return response;
 }

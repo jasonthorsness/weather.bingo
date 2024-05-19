@@ -18,7 +18,7 @@ export default function Component({ today }: { today: Date }) {
         router.push(updatedHref);
       }, 0);
     }
-  }, []);
+  });
 
-  return <> </>;
+  return <div id="reloader"> </div>;
 }

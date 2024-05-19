@@ -30,10 +30,12 @@ export default async function GET(limit: number, cities: string[], lks: number[]
     if (idx.some((i) => i == null || !isFinite(i) || i < 0 || i >= cities.length)) {
       const response = NextResponse.json({ error: "bad idx" }, { status: 400 });
       response.headers.set("Cache-Control", cacheControlHeader);
+      response.headers.set("Access-Control-Allow-Origin", "*");
       return response;
     }
     const response = NextResponse.json(idx.map((i) => cities[i].substring(3).split("|")[0]));
     response.headers.set("Cache-Control", cacheControlHeader);
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 
@@ -41,6 +43,7 @@ export default async function GET(limit: number, cities: string[], lks: number[]
   if (query == null) {
     const response = NextResponse.json({ error: "bad query" }, { status: 400 });
     response.headers.set("Cache-Control", cacheControlHeader);
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 
@@ -48,6 +51,7 @@ export default async function GET(limit: number, cities: string[], lks: number[]
   if (!nameMatch) {
     const response = NextResponse.json([]);
     response.headers.set("Cache-Control", cacheControlHeader);
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 
@@ -62,12 +66,14 @@ export default async function GET(limit: number, cities: string[], lks: number[]
     if (end >= cities.length) {
       const response = NextResponse.json({ error: "bad query" }, { status: 400 });
       response.headers.set("Cache-Control", cacheControlHeader);
+      response.headers.set("Access-Control-Allow-Origin", "*");
       return response;
     }
 
     if (end < 0) {
       const response = NextResponse.json([]);
       response.headers.set("Cache-Control", cacheControlHeader);
+      response.headers.set("Access-Control-Allow-Origin", "*");
       return response;
     }
 
@@ -109,5 +115,6 @@ export default async function GET(limit: number, cities: string[], lks: number[]
 
   const response = NextResponse.json(results);
   response.headers.set("Cache-Control", cacheControlHeader);
+  response.headers.set("Access-Control-Allow-Origin", "*");
   return response;
 }
