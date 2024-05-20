@@ -4,7 +4,7 @@ export default function Component() {
   return (
     <header className="flex flex-col pb-2 px-2">
       <div className="flex justify-between pt-1">
-        <Link className="text-4xl font-bold pb-1 whitespace-nowrap" href="/">
+        <Link className="text-4xl font-bold pb-1 whitespace-nowrap" href="/" prefetch={false}>
           weather.bingo
         </Link>
         <div className="flex gap-4 pt-2 pt-3">

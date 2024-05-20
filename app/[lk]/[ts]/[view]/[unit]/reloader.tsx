@@ -11,14 +11,14 @@ export default function Component({ today }: { today: Date }) {
     let todayTS = unixMillisecondsToTS(today.getTime());
     let nowTS = unixMillisecondsToTS(new Date().getTime());
     if (todayTS != nowTS) {
+      console.log("today", todayTS, "now", nowTS);
       let updatedHref = window.location.href;
       updatedHref = updatedHref.replace(todayTS.toString(), nowTS.toString());
       window.history.pushState({}, "", updatedHref);
-      setTimeout(() => {
-        router.push(updatedHref);
-      }, 0);
+      window.dispatchEvent(new Event("mynav"));
+      router.replace(updatedHref);
     }
-  });
+  }, [today, router]);
 
   return <div id="reloader"> </div>;
 }
