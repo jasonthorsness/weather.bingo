@@ -3,7 +3,6 @@ import Peer from "components/peer";
 import Weeks from "components/weeks";
 import { getInfoFromParams } from "../params";
 import { formatDateForAPI, getAndCacheData } from "lib/weather";
-import Reloader from "../reloader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -59,7 +58,6 @@ export default async function Calendar({
           </div>
         </div>
       </div>
-      <Reloader today={today} />
     </>
   );
 }

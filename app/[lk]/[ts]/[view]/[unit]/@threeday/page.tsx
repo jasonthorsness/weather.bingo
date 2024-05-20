@@ -3,7 +3,6 @@ import Peer from "components/peer";
 import ThreeDay from "components/threeDay";
 import { formatDateForAPI, getAndCacheData } from "lib/weather";
 import { getInfoFromParams } from "../params";
-import Reloader from "../reloader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -56,7 +55,6 @@ export default async function Calendar({
             &nbsp;
           </div>
         </div>
-        <Reloader today={today} />
       </div>
     </>
   );
