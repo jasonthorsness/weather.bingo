@@ -21,7 +21,7 @@ export async function GET(r: NextRequest) {
     origin != null &&
     origin != "https://weather.bingo" &&
     origin != "http://localhost:3000" &&
-    origin != "http://www.jasonthorsness.com"
+    origin != "https://www.jasonthorsness.com"
   ) {
     const response = NextResponse.json({ error: "bad origin" }, { status: 400 });
     return response;
