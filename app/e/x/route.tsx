@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerTS } from "lib/ts";
 import KDBush from "kdbush";
-import { around } from "geokdbush-tk";
+import { around } from "geokdbush";
 
 import latJSON from "data/lat.json";
 import lonJSON from "data/lon.json";
