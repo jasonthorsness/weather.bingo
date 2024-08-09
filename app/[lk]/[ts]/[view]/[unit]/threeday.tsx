@@ -1,41 +1,23 @@
-import { waitUntil } from "@vercel/functions";
 import Peer from "components/peer";
 import ThreeDay from "components/threeDay";
-import { formatDateForAPI, getAndCacheData } from "lib/weather";
-import { getInfoFromParams } from "../params";
+import { LoadWeatherVisualCrossingResponse } from "lib/weather";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 
 export default async function Calendar({
+  hoursData,
+  yesterday,
+  today,
+  tomorrow,
   params: { lk, ts, view, unit },
 }: {
+  hoursData: LoadWeatherVisualCrossingResponse;
+  yesterday: Date;
+  today: Date;
+  tomorrow: Date;
   params: { lk: string; ts: string; view: string; unit: string };
 }) {
-  if (view !== "threeday") {
-    return <></>;
-  }
-  const [lki, today] = getInfoFromParams(lk, ts, view, unit);
-
-  const adjustedToday = new Date(today);
-  adjustedToday.setTime(adjustedToday.getTime() - adjustedToday.getTimezoneOffset() * 60 * 1000);
-
-  const yesterday = new Date();
-  yesterday.setTime(adjustedToday.getTime() - 1 * 24 * 60 * 60 * 1000);
-
-  const tomorrow = new Date();
-  tomorrow.setTime(adjustedToday.getTime() + 1 * 24 * 60 * 60 * 1000);
-
-  const [hoursData, toCache] = await getAndCacheData("vcHours", lki, [
-    formatDateForAPI(yesterday),
-    formatDateForAPI(adjustedToday),
-    formatDateForAPI(tomorrow),
-  ]);
-  if (toCache) {
-    console.log("caching");
-    waitUntil(toCache);
-  }
-
   return (
     <>
       <div className="pb-2 px-2 relative">
