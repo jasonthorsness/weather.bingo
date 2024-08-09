@@ -34,24 +34,24 @@ export default async function Component({
   data: LoadWeatherVisualCrossingDay[];
   now: Date;
 }) {
-  const agents = await getAndCacheLLM(name, now, data);
+  const agents = await getAndCacheLLM(name, now, data, unit === "c");
   return (
     <div className="relative">
       <Peer id="test" target={`/${lk}/${ts}/${view}/${unit}`} delay={0} />
       <div className="peer-checked/test:invisible">
         <div className="flex flex-col items-stretch">
-          <div className="grid grid-cols-[50px,1fr] pt-4">
-            <div className="text-[32px] w-[60px]">🐶</div>
+          <div className="grid grid-cols-[auto,1fr] pt-4">
+            <div className="text-[32px] pr-1">🐶</div>
             <div>{agents.watson}</div>
           </div>
-          <div className="grid grid-cols-[50px,1fr] pt-4">
-            <div className="text-[32px]">😊</div>
+          <div className="grid grid-cols-[auto,1fr] pt-4">
+            <div className="text-[32px] pr-1">😊</div>
             <div>
               <div>{agents.joy}</div>
             </div>
           </div>
-          <div className="grid grid-cols-[50px,1fr] pt-4">
-            <div className="text-[32px]">🤖</div>
+          <div className="grid grid-cols-[auto,1fr] pt-4">
+            <div className="text-[32px] pr-1">🤖</div>
             <div>{agents.core}</div>
           </div>
         </div>

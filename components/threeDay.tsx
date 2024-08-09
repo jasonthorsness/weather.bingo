@@ -3,8 +3,8 @@ import WeatherIcon from "components/weatherIcon";
 import {
   LoadWeatherVisualCrossingResponse,
   LoadWeatherVisualCrossingDay,
-  LoadWeatherVisualCrossingHour,
   getAqiClassNames,
+  averageIt,
 } from "lib/weather";
 
 interface ThreeDayProps {
@@ -81,78 +81,6 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
   const todayData: LoadWeatherVisualCrossingDay = data.daysKeyed[today.toISOString().split("T")[0]];
   const tomorrowData: LoadWeatherVisualCrossingDay =
     data.daysKeyed[tomorrow.toISOString().split("T")[0]];
-
-  const getNormalizedScore = (icon: string) => {
-    switch (icon) {
-      case "clear-day":
-        return 0;
-      case "cloudy":
-        return 1;
-      case "fog":
-        return 0;
-      case "hail":
-        return 2;
-      case "partly-cloudy-day":
-        return 1;
-      case "rain-snow-showers-day":
-        return 2;
-      case "rain-snow":
-        return 2;
-      case "rain":
-        return 2;
-      case "showers-day":
-        return 2;
-      case "snow-showers-day":
-        return 2;
-      case "snow":
-        return 2;
-      case "sleet":
-        return 2;
-      case "thunder-rain":
-        return 2;
-      case "thunder-showers-day":
-        return 2;
-      case "thunder":
-        return 1.5;
-      case "wind":
-        return 0;
-      default:
-    }
-    return -1;
-  };
-
-  const averageIt = (hours: LoadWeatherVisualCrossingHour[], night: boolean) => {
-    let temp = hours.slice(1).reduce(
-      (acc, cur) => {
-        let normalized = cur.icon;
-        normalized = normalized.replace("night", "day") as VisualCrossingIconName;
-        if (getNormalizedScore(normalized) > getNormalizedScore(acc.icon)) {
-          acc.icon = normalized;
-        }
-        if (night) {
-          normalized = normalized.replace("day", "night") as VisualCrossingIconName;
-        }
-        return {
-          min: Math.min(acc.min, cur.temp),
-          max: Math.max(acc.max, cur.temp),
-          aqius: Math.max(acc.aqius, cur.aqius),
-          icon: normalized,
-        };
-      },
-      {
-        min: hours[0].temp,
-        max: hours[0].temp,
-        icon: hours[0].icon,
-        aqius: hours[0].aqius,
-      }
-    );
-    return {
-      min: temp.min,
-      max: temp.max,
-      icon: temp.icon,
-      aqius: temp.aqius,
-    };
-  };
 
   if (
     typeof yesterdayData.hours === "undefined" ||

@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import clientPromise from "lib/mongodb";
 import OpenAI from "openai";
-import { LoadWeatherVisualCrossingDay } from "./weather";
+import { LoadWeatherVisualCrossingDay, averageIt } from "./weather";
 
 const openai = new OpenAI();
 
@@ -65,24 +65,46 @@ to reference something about the location. Don't give numbers or specific data, 
 interpretations! Every sentence should have something weather-related in it. Make sure you include
 at least one reference to temp, one to conditions, and one to air quality.
 
-Don't mention actual data points or numbers, just your interpretations. If aqius is over 99, air is
-very bad, mention that.
+AQIUS explanation:
+0 to 50 Green	Good		Air quality is satisfactory, and air pollution poses little or no risk.
+51 to 100 Yellow	Moderate		Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution.
+101 to 150 Orange	Unhealthy for Sensitive Groups		Members of sensitive groups may experience health effects. The general public is less likely to be affected.
+151 to 200 Red	Unhealthy		Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects.
+201 to 300 Purple	Very Unhealthy		Health alert: The risk of health effects is increased for everyone.
+301 and higher Maroon	Hazardous		Health warning of emergency conditions: everyone is more likely to be affected.
 
 When aqius is null or absent, it means there is no
 observation or forecast yet for that day. Don't comment on the lack of AQI data in the forecast.
 `;
 
-function getRequest(cityName: string, now: Date, daysData: LoadWeatherVisualCrossingDay[]) {
+function getRequest(
+  cityName: string,
+  now: Date,
+  daysData: LoadWeatherVisualCrossingDay[],
+  prefersCelsius: boolean
+) {
   // print just the YYYY-MM-DD part of the date
   //
   const nowDate = now.toISOString().split("T")[0];
 
   // now just the time, without the time zone
   //
-  const nowTimeParts = now.toISOString().split("T")[1].split(".")[0].split(":");
   let nowTimeString = "";
-  if (daysData[0].hours != null) {
-    nowTimeString = `The current time is ${nowTimeParts[0]}:00.`;
+  if ((daysData[0] as any).overnight != null) {
+    if (now.getHours() < 6) {
+      nowTimeString = "The current time is very early morning.";
+    } else if (now.getHours() < 12) {
+      nowTimeString = "The current time is morning.";
+    } else if (now.getHours() < 18) {
+      nowTimeString = "The current time is afternoon.";
+    } else {
+      nowTimeString = "The current time is evening.";
+    }
+  }
+
+  let celsiusString = "";
+  if (prefersCelsius) {
+    celsiusString = "please convert any temperature you display from fahrenheit to celsius.";
   }
 
   const request: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming = {
@@ -90,7 +112,7 @@ function getRequest(cityName: string, now: Date, daysData: LoadWeatherVisualCros
       { role: "system", content: promptFull },
       {
         role: "user",
-        content: `The location is ${cityName}. The current date is ${nowDate}. ${nowTimeString} Generate a response for the following data: ${JSON.stringify(
+        content: `The location is ${cityName}. The current date is ${nowDate}. ${nowTimeString} ${celsiusString} Generate a response for the following data: ${JSON.stringify(
           daysData
         )}`,
       },
@@ -157,9 +179,30 @@ async function putCache(
 export async function getAndCacheLLM(
   cityName: string,
   now: Date,
-  daysData: LoadWeatherVisualCrossingDay[]
+  daysData: LoadWeatherVisualCrossingDay[],
+  prefersCelsius: boolean
 ): Promise<{ watson: string; joy: string; core: string }> {
-  const request = getRequest(cityName, now, daysData);
+  const view = daysData[0]?.hours != null ? "threeday" : "calendar";
+
+  let newDaysData = daysData as any;
+  if (view === "threeday") {
+    newDaysData = daysData.map((day: any) => {
+      return {
+        date: day.datetime,
+        overnight: averageIt(day.hours.slice(0, 6), true),
+        morning: averageIt(day.hours.slice(6, 12), false),
+        afternoon: averageIt(day.hours.slice(12, 18), false),
+        evening: averageIt(day.hours.slice(18, 24), true),
+      };
+    }) as any;
+    newDaysData.sort((a: any, b: any) => {
+      return a.date.localeCompare(b.date);
+    });
+    newDaysData[0]._id = "yesterday";
+    newDaysData[1]._id = "today";
+    newDaysData[2]._id = "tomorrow";
+  }
+  const request = getRequest(cityName, now, newDaysData, prefersCelsius);
   const requestString = JSON.stringify(request);
   const requestHash = crypto.createHash("sha256").update(requestString).digest("hex");
   let cachedResponse = await getCache(requestHash);
@@ -170,7 +213,6 @@ export async function getAndCacheLLM(
   }
   const response = await openai.chat.completions.create(request);
   console.log(response.usage);
-  const view = daysData[0].hours != null ? "threeday" : "calendar";
   await putCache(
     requestHash,
     cityName,
