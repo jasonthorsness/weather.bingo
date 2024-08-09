@@ -3,6 +3,7 @@ import clientPromise from "lib/mongodb";
 export type LoadWeatherVisualCrossingHour = {
   temp: number;
   icon: VisualCrossingIconName;
+  aqius: number;
 };
 
 export type LoadWeatherVisualCrossingDay = {
@@ -11,6 +12,7 @@ export type LoadWeatherVisualCrossingDay = {
   tempmin: number;
   icon: VisualCrossingIconName;
   hours?: LoadWeatherVisualCrossingHour[];
+  aqius: number;
 };
 
 export type LoadWeatherVisualCrossingResponse = {
@@ -24,6 +26,25 @@ export type LoadWeatherResponse = {
 };
 
 const maxStaleForecastMilliseconds = 29 * 60 * 1000;
+
+// https://www.airnow.gov/aqi/aqi-basics
+export function getAqiClassNames(aqi: number) {
+  if (aqi >= 0 && aqi <= 50) {
+    return "bg-green-500 text-black";
+  } else if (aqi >= 51 && aqi <= 100) {
+    return "bg-yellow-500 text-black";
+  } else if (aqi >= 101 && aqi <= 150) {
+    return "bg-orange-400 dark:bg-orange-500 text-black";
+  } else if (aqi >= 151 && aqi <= 200) {
+    return "bg-red-600 dark:bg-red-500 text-white dark:text-black";
+  } else if (aqi >= 201 && aqi <= 300) {
+    return "bg-purple-600 dark:bg-purple-500 text-white dark:text-black";
+  } else if (aqi >= 301) {
+    return "bg-[#C32148] dark:bg-[#DE3961] text-white dark:text-black";
+  } else {
+    return "";
+  }
+}
 
 export function formatDateForAPI(date: Date) {
   return date.toISOString().split("T")[0];
@@ -47,12 +68,14 @@ async function getCache(collectionName: "vcDays" | "vcHours", lk: number, dateKe
     tempmin: 1,
     tempmax: 1,
     icon: 1,
+    aqius: 1,
   };
 
   if (collectionName === "vcHours") {
     projection["hours.datetime"] = 1;
     projection["hours.temp"] = 1;
     projection["hours.icon"] = 1;
+    projection["hours.aqius"] = 1;
   }
 
   const ids: { lk: number; date: string }[] = [];
@@ -64,6 +87,8 @@ async function getCache(collectionName: "vcDays" | "vcHours", lk: number, dateKe
     {
       // _id lookup is more efficient than scanning a range; since we know the exact set we are looking for
       _id: { $in: ids },
+      // return data that was cached with the latest fields only
+      ver: { $gt: 1 },
       // Here we consider data that is "obs" (real) or a recent-enough forecast
       $or: [
         { source: "obs" },
@@ -100,6 +125,7 @@ async function putCache(
         date: day.datetime.split("T")[0],
       },
       updatedUTC: new Date().getTime(),
+      ver: 2,
       ...day,
     };
   });
@@ -173,8 +199,8 @@ export async function getAndCacheData(
 
   const elementsString =
     collectionName === "vcDays"
-      ? "datetime%2Ctempmax%2Ctempmin%2Cicon%2Csource"
-      : "datetime%2Ctemp%2Cicon%2Csource";
+      ? "datetime%2Ctempmax%2Ctempmin%2Cicon%2Csource%2Caqius"
+      : "datetime%2Ctemp%2Cicon%2Csource%2Caqius";
 
   const lat = ((lk >> 16) - 9000) / 100;
   const lon = ((lk & 0xffff) - 18000) / 100;

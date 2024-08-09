@@ -85,8 +85,16 @@ export default function Layout({
         {view === "calendar" && (
           <div className={`col-span-4 ${monoFont.className}`}>{calendar}</div>
         )}
-        <div className="pb-2 px-2 relative col-span-4">
-          <p className="text-xs text-right pt-2 pr-2 font-sans">
+        <div className="pb-2 px-2 relative col-span-4 flex justify-between items-center text-xs pt-2 pr-2 font-sans">
+          <p className="text-left">
+            <a href="https://www.airnow.gov/aqi/aqi-basics/" target="_blank" className="underline">
+              <div className="flex items-center">
+                <div className="text-[8px] sm:text-base text-bold h-4 w-4 rounded-sm mr-1 bg-green-500 text-black font-bold inline-block"></div>
+                AQI Explanation
+              </div>
+            </a>
+          </p>
+          <p className="text-right ">
             Temperature in °{unit == "f" ? "F" : "C"}
             {" ("}
             <SoftLink

@@ -23,6 +23,7 @@ type VisualCrossingIconName =
   | "wind";
 
 interface VisualCrossingHour {
+  aqius: number;
   datetime: string;
   //datetimeEpoch: number;
   temp: number;
@@ -62,6 +63,7 @@ interface VisualCrossingStation {
 }
 
 interface VisualCrossingDay {
+  aqius: number;
   datetime: string;
   //datetimeEpoch: number;
   tempmax: number;

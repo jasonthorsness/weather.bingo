@@ -4,6 +4,7 @@ import {
   LoadWeatherVisualCrossingResponse,
   LoadWeatherVisualCrossingDay,
   LoadWeatherVisualCrossingHour,
+  getAqiClassNames,
 } from "lib/weather";
 
 interface ThreeDayProps {
@@ -36,14 +37,16 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
       min: number;
       max: number;
       icon: VisualCrossingIconName;
+      aqius: number;
     },
     celsius: boolean
   ) => {
     const tempmin = celsius ? ((data.min - 32) * 5) / 9 : data.min;
     const tempmax = celsius ? ((data.max - 32) * 5) / 9 : data.max;
+    const aqius = data.aqius;
 
     return (
-      <div className={`relative grid grid-cols-[1fr,auto] h-full p-1`}>
+      <div className={`relative grid grid-cols-[1fr,auto] h-full p-1 aspect-square`}>
         <div className="flex flex-row-reverse items-center">
           <WeatherIcon className="inline-block w-full" name={data.icon} />
         </div>
@@ -62,6 +65,13 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
             NOW
           </div>
         )}
+        <div
+          className={`absolute left-1 sm:left-2 bottom-1 sm:bottom-2 text-sm sm:text-base text-bold rounded-sm px-0.5 font-bold ${getAqiClassNames(
+            aqius
+          )}`}
+        >
+          <div className="-my-0.5">{aqius}</div>
+        </div>
       </div>
     );
   };
@@ -125,6 +135,7 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
         return {
           min: Math.min(acc.min, cur.temp),
           max: Math.max(acc.max, cur.temp),
+          aqius: Math.max(acc.aqius, cur.aqius),
           icon: normalized,
         };
       },
@@ -132,12 +143,14 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
         min: hours[0].temp,
         max: hours[0].temp,
         icon: hours[0].icon,
+        aqius: hours[0].aqius,
       }
     );
     return {
       min: temp.min,
       max: temp.max,
       icon: temp.icon,
+      aqius: temp.aqius,
     };
   };
 
