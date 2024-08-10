@@ -6,18 +6,10 @@ export function Pending() {
   return (
     <div className="flex flex-col items-stretch">
       <div className="grid grid-cols-[50px,1fr] pt-4">
-        <div className="text-[32px] w-[60px]">🐶</div>
-        <div>...</div>
-      </div>
-      <div className="grid grid-cols-[50px,1fr] pt-4">
         <div className="text-[32px]">😊</div>
         <div>
           <div>...</div>
         </div>
-      </div>
-      <div className="grid grid-cols-[50px,1fr] pt-4">
-        <div className="text-[32px]">🤖</div>
-        <div>...</div>
       </div>
     </div>
   );
@@ -41,18 +33,10 @@ export default async function Component({
       <div className="peer-checked/test:invisible">
         <div className="flex flex-col items-stretch">
           <div className="grid grid-cols-[auto,1fr] pt-4">
-            <div className="text-[32px] pr-1">🐶</div>
-            <div>{agents.watson}</div>
-          </div>
-          <div className="grid grid-cols-[auto,1fr] pt-4">
             <div className="text-[32px] pr-1">😊</div>
             <div>
-              <div>{agents.joy}</div>
+              <div>{agents.amy}</div>
             </div>
-          </div>
-          <div className="grid grid-cols-[auto,1fr] pt-4">
-            <div className="text-[32px] pr-1">🤖</div>
-            <div>{agents.core}</div>
           </div>
         </div>
       </div>

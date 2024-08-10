@@ -170,18 +170,10 @@ export default async function Component({
             fallback={
               <div className="flex flex-col items-stretch">
                 <div className="grid grid-cols-[50px,1fr] pt-4">
-                  <div className="text-[32px] w-[60px]">🐶</div>
-                  <div>...</div>
-                </div>
-                <div className="grid grid-cols-[50px,1fr] pt-4">
                   <div className="text-[32px]">😊</div>
                   <div>
                     <div>...</div>
                   </div>
-                </div>
-                <div className="grid grid-cols-[50px,1fr] pt-4">
-                  <div className="text-[32px]">🤖</div>
-                  <div>...</div>
                 </div>
               </div>
             }
