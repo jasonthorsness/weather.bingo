@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Peer from "components/peer";
 import CityLink from "components/cityLink";
 import ResolvedAddress from "components/resolvedAddress";
+import { getInTheNews } from "lib/inTheNews";
 
 export const metadata: Metadata = {
   title: "weather.bingo",
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 21600;
+
 export default async function Home() {
+  const inTheNews = await getInTheNews();
   return (
     <>
       <div className="px-2 peer-checked/test3:invisible">
@@ -43,33 +47,15 @@ export default async function Home() {
       <div className="px-2 pt-4 relative">
         <Peer id="test" target={`/`} delay={0} />
         <div className="peer-checked/test:invisible">
-          <h1 className="text-xl">Popular Cities</h1>
+          <h1 className="text-xl">In The News</h1>
           <ul className="">
-            <li className="py-1">
-              <CityLink href="/703751414/00000/threeday/c" className="underline">
-                Hyderābād, Telangana, India
-              </CityLink>
-            </li>
-            <li className="py-1">
-              <CityLink href="/843596479/00000/threeday/c" className="underline">
-                Lisbon, Portugal
-              </CityLink>
-            </li>
-            <li className="py-1">
-              <CityLink href="/927417923/00000/threeday/c" className="underline">
-                London, England, GB
-              </CityLink>
-            </li>
-            <li className="py-1">
-              <CityLink href="/856631655/00000/threeday/c" className="underline">
-                New York City, New York, US
-              </CityLink>
-            </li>
-            <li className="py-1">
-              <CityLink href="/901846663/00000/threeday/c" className="underline">
-                Seattle, Washington, US
-              </CityLink>
-            </li>
+            {inTheNews.map((item) => (
+              <li key={item.lk} className="py-1">
+                <CityLink href={`/${item.lk}/00000/threeday/c`} className="underline">
+                  {item.name}
+                </CityLink>
+              </li>
+            ))}
           </ul>
         </div>
         <Peer id="test2" target={`/`} delay={750} />
