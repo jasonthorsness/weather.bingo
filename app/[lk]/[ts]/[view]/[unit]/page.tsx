@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Share from "components/share";
 import SoftLink from "components/softLink";
 import Nav from "./nav";
@@ -6,26 +5,11 @@ import { Suspense } from "react";
 import LLMView from "./llmView";
 import Calendar from "./calendar";
 import ThreeDay from "./threeday";
-import { waitUntil } from "@vercel/functions";
-import { getInfoFromParams } from "./params";
-import { formatDateForAPI, getAndCacheData } from "lib/weather";
-
 import { monoFont } from "app/monoFont";
-
-import { getName } from "app/e/getName";
+import { getCalendarData, getThreeDayData, getNameFromParams } from "./data";
 
 export const runtime = "nodejs";
-export const dynamic = "force-static";
-
-async function getNameFromParams(lk: string) {
-  let name = "";
-  try {
-    name = await getName(parseInt(lk));
-  } catch {
-    notFound();
-  }
-  return name;
-}
+// export const dynamic = "force-static";
 
 export async function generateMetadata({
   params: { lk, ts, view, unit },
@@ -66,53 +50,6 @@ export async function generateMetadata({
       ],
     },
   };
-}
-
-async function getCalendarData(lk: string, ts: string, unit: string, view: string) {
-  const [lki, today] = getInfoFromParams(lk, ts, view, unit);
-
-  const minRange = new Date();
-  minRange.setTime(today.getTime() - (14 + today.getDay()) * 24 * 60 * 60 * 1000);
-
-  const maxRange = new Date();
-  maxRange.setTime(today.getTime() + (14 + (6 - today.getDay())) * 24 * 60 * 60 * 1000);
-
-  const datesNeeded: string[] = [];
-  for (; minRange <= maxRange; ) {
-    datesNeeded.push(formatDateForAPI(minRange));
-    minRange.setTime(minRange.getTime() + 24 * 60 * 60 * 1000);
-  }
-  minRange.setTime(today.getTime() - (14 + today.getDay()) * 24 * 60 * 60 * 1000);
-  const [daysData, toCache] = await getAndCacheData("vcDays", lki, datesNeeded);
-  if (toCache) {
-    console.log("caching");
-    waitUntil(toCache);
-  }
-  return { daysData, minRange, maxRange, today };
-}
-
-async function getThreeDayData(lk: string, ts: string, unit: string, view: string) {
-  const [lki, today] = getInfoFromParams(lk, ts, view, unit);
-
-  const adjustedToday = new Date(today);
-  adjustedToday.setTime(adjustedToday.getTime() - adjustedToday.getTimezoneOffset() * 60 * 1000);
-
-  const yesterday = new Date();
-  yesterday.setTime(adjustedToday.getTime() - 1 * 24 * 60 * 60 * 1000);
-
-  const tomorrow = new Date();
-  tomorrow.setTime(adjustedToday.getTime() + 1 * 24 * 60 * 60 * 1000);
-
-  const [hoursData, toCache] = await getAndCacheData("vcHours", lki, [
-    formatDateForAPI(yesterday),
-    formatDateForAPI(adjustedToday),
-    formatDateForAPI(tomorrow),
-  ]);
-  if (toCache) {
-    console.log("caching");
-    waitUntil(toCache);
-  }
-  return { hoursData, yesterday, today, tomorrow };
 }
 
 export default async function Component({
@@ -178,12 +115,7 @@ export default async function Component({
               </div>
             }
           >
-            <LLMView
-              params={{ lk: lk, ts: ts, view: view, unit: unit }}
-              name={name}
-              data={view === "calendar" ? calendarData.daysData.days : threeDayData.hoursData.days}
-              now={view === "calendar" ? calendarData.today : threeDayData.today}
-            />
+            <LLMView params={{ lk: lk, ts: ts, view: view, unit: unit }} />
           </Suspense>
         </div>
       </div>

@@ -1,6 +1,8 @@
-import { getAndCacheLLM } from "lib/llm";
-import { LoadWeatherVisualCrossingDay } from "lib/weather";
+"use client";
+
 import Peer from "components/peer";
+import { useEffect, useState } from "react";
+import getLLMResponse from "./llmViewAction";
 
 export function Pending() {
   return (
@@ -15,18 +17,18 @@ export function Pending() {
   );
 }
 
-export default async function Component({
+export default function Component({
   params: { lk, ts, view, unit },
-  name,
-  data,
-  now,
 }: {
   params: { lk: string; ts: string; view: string; unit: string };
-  name: string;
-  data: LoadWeatherVisualCrossingDay[];
-  now: Date;
 }) {
-  const agents = await getAndCacheLLM(name, now, data, unit === "c");
+  const [agents, setAgents] = useState<any>({ amy: "..." });
+  useEffect(() => {
+    getLLMResponse(lk, ts, view, unit).then((x) => {
+      setAgents(x.agents);
+    });
+  }, [lk, ts, view, unit]);
+
   return (
     <div className="relative">
       <Peer id="test" target={`/${lk}/${ts}/${view}/${unit}`} delay={0} />

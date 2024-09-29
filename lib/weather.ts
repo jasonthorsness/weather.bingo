@@ -225,8 +225,12 @@ export async function getAndCacheData(
   lk: number,
   datesNeeded: string[]
 ): Promise<[LoadWeatherVisualCrossingResponse, Promise<any> | null]> {
-  let resultsArray = await getCache(collectionName, lk, datesNeeded);
-
+  let resultsArray: (LoadWeatherVisualCrossingDay & { _id: { lk: number; date: string } })[] = [];
+  const cachePromise = getCache(collectionName, lk, datesNeeded);
+  resultsArray = await Promise.race([
+    cachePromise,
+    new Promise<[]>((resolve) => setTimeout(() => resolve([]), 100)),
+  ]);
   const keyed: { [key: string]: LoadWeatherVisualCrossingDay } = {};
   resultsArray.forEach((result) => {
     result.datetime = result._id.date;
