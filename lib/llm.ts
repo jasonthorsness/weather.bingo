@@ -176,7 +176,8 @@ export async function getAndCacheLLM(
   cityName: string,
   now: Date,
   daysData: LoadWeatherVisualCrossingDay[],
-  prefersCelsius: boolean
+  prefersCelsius: boolean,
+  onlyCache: boolean = false
 ): Promise<{ watson: string; amy: string; core: string }> {
   const view = daysData[0]?.hours != null ? "threeday" : "calendar";
 
@@ -257,6 +258,9 @@ export async function getAndCacheLLM(
     console.log(cachedResponse);
     console.log("Using cached LLM response");
     return cachedResponse;
+  }
+  if (onlyCache) {
+    return { watson: "", amy: "", core: "" };
   }
   const response = await openai.chat.completions.create(request);
   console.log(response.usage);

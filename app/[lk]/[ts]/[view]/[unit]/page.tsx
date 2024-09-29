@@ -7,6 +7,7 @@ import Calendar from "./calendar";
 import ThreeDay from "./threeday";
 import { monoFont } from "app/monoFont";
 import { getCalendarData, getThreeDayData, getNameFromParams } from "./data";
+import { getAndCacheLLM } from "lib/llm";
 
 export const runtime = "nodejs";
 // export const dynamic = "force-static";
@@ -65,6 +66,14 @@ export default async function Component({
   let threeDayData =
     view === "threeday" ? await getThreeDayData(lk, ts, unit, view) : (null as any);
 
+  const llmResponse = await getAndCacheLLM(
+    name,
+    view === "calendar" ? calendarData.today : threeDayData.today,
+    view === "calendar" ? calendarData.daysData.days : threeDayData.hoursData.days,
+    unit === "c",
+    true /* onlyCache */
+  );
+
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-[auto,auto,1fr,100px]">
@@ -115,7 +124,9 @@ export default async function Component({
               </div>
             }
           >
-            <LLMView params={{ lk: lk, ts: ts, view: view, unit: unit }} />
+            <LLMView
+              params={{ lk: lk, ts: ts, view: view, unit: unit, initialAgents: llmResponse }}
+            />
           </Suspense>
         </div>
       </div>
