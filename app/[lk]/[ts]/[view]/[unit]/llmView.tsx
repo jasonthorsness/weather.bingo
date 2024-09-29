@@ -46,7 +46,7 @@ export default function Component({
         </div>
       </div>
       <Peer id="test2" target={`/${lk}/${ts}/${view}/${unit}`} delay={750} />
-      <div className="absolute left-1 top-0 w-full h-full hidden peer-checked/test2:block">
+      <div className="absolute top-0 w-full h-full hidden peer-checked/test2:block">
         <Pending />
       </div>
     </div>
