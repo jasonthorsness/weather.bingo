@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Share from "components/share";
 import SoftLink from "components/softLink";
 import Nav from "./nav";
@@ -12,11 +13,13 @@ import { getAndCacheLLM } from "lib/llm";
 export const runtime = "nodejs";
 // export const dynamic = "force-static";
 
-export async function generateMetadata({
-  params: { lk, ts, view, unit },
-}: {
-  params: { lk: string; ts: string; view: string; unit: string };
-}) {
+type Props = {
+  params: Promise<{ lk: string; ts: string; view: string; unit: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lk, ts, view, unit } = await params;
+
   const name = await getNameFromParams(lk);
   const simpleName = name.split(",")[0];
   const url = `https://weather.bingo/${lk}/${ts}/${view}/${unit}`;
@@ -53,11 +56,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function Component({
-  params: { lk, ts, view, unit },
-}: Readonly<{
-  params: { lk: string; ts: string; view: string; unit: string };
-}>) {
+export default async function Component({ params }: Props) {
+  const { lk, ts, view, unit } = await params;
   const url = `https://weather.bingo/${lk}/${ts}/${view}/${unit}`;
   const name = await getNameFromParams(lk);
 

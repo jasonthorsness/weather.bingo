@@ -25,7 +25,13 @@ function getInfoFromParams(lk: string): [number, Date] {
 }
 
 /* eslint @next/next/no-img-element: 0 */
-export async function GET(_: NextRequest, { params: { lk } }: { params: { lk: string } }) {
+export async function GET(_: NextRequest, props: { params: Promise<{ lk: string }> }) {
+  const params = await props.params;
+
+  const {
+    lk
+  } = params;
+
   if (lk === "ROOT_IMAGE") {
     return new ImageResponse(
       (

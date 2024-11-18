@@ -18,11 +18,12 @@ async function getNameFromParams(lk: string) {
 
 export default async function Layout({
   children,
-  params: { lk },
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-  params: { lk: string };
-}>) {
+  params: Promise<{ lk: string }>;
+}) {
+  const { lk } = await params;
   const name = await getNameFromParams(lk);
   return (
     <div className="flex flex-col">

@@ -1,5 +1,5 @@
 const tsOffset = 1600000000;
-const tsPeriodSeconds = 29 * 60;
+const tsPeriodSeconds = 59 * 60;
 
 function tsToUnixMilliseconds(ts: number) {
   return (ts * tsPeriodSeconds + tsOffset) * 1000;
