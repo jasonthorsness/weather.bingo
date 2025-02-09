@@ -4,6 +4,8 @@ import { monoFont } from "app/monoFont";
 
 import Header from "components/header";
 import Footer from "components/footer";
+import { FathomAnalytics } from "components/fathomAnalytics";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,6 +34,7 @@ export default function RootLayout({
             {children}
             <div className={`${monoFont.className} invisible`}>&nbsp;</div>
           </div>
+          <FathomAnalytics />
           <Footer />
         </>
       </body>
