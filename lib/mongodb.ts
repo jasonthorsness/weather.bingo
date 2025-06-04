@@ -1,11 +1,7 @@
 // Adapted from https://github.com/vercel/next.js/blob/canary/examples/with-mongodb/lib/mongodb.ts
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-if (!process.env["SINGLESTORE_KAI_CONNECTION_STRING"]) {
-  throw new Error('Invalid/Missing environment variable: "SINGLESTORE_KAI_CONNECTION_STRING"');
-}
-
-const uri = process.env["SINGLESTORE_KAI_CONNECTION_STRING"];
+const uri = process.env["SINGLESTORE_KAI_CONNECTION_STRING"] ?? "mongodb://localhost:27017";
 const options = {
   serverApi: {
     version: ServerApiVersion.v1,
