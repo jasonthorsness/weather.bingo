@@ -35,16 +35,35 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 86400;
+
 export default async function Home() {
+  const inTheNews = await getInTheNews();
   return (
     <>
-      <div className="p-2">
-        <h1 className="text-2xl">weather.bingo has been retired</h1>
-        <p>
-          scrapers decided to harvest weather data from it and run up my bill. Since usage was
-          extremely low other than the scrapers, I have retired the site. It was fun while it lasted
-          😭
-        </p>
+      <div className="px-2 peer-checked/test3:invisible">
+        <ResolvedAddress name="Search by City Name" />
+      </div>
+      <div className="px-2 pt-4 relative">
+        <Peer id="test" target={`/`} delay={0} />
+        <div className="peer-checked/test:invisible">
+          <h1 className="text-xl">In The News</h1>
+          <ul className="">
+            {inTheNews.map((item) => (
+              <li key={item.lk} className="py-1">
+                <CityLink href={`/${item.lk}/00000/threeday/c`} className="underline">
+                  {item.name}
+                </CityLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Peer id="test2" target={`/`} delay={750} />
+        <div className="absolute top-0 w-full h-full hidden peer-checked/test2:block py-[20px] pr-4">
+          <div className="bg-black dark:bg-white border-[20px] rounded-xl opacity-20 border-black dark:border-white w-full h-full">
+            &nbsp;
+          </div>
+        </div>
       </div>
     </>
   );
