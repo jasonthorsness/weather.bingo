@@ -10,7 +10,12 @@ export async function getInTheNews() {
   const db = client.db();
   const collection = db.collection<InTheNewsItem>("inTheNews");
   const response = await collection.find().toArray();
-  const namePromises = response.map((item) => getName(item.lk));
+  let namePromises: Promise<string>[] = [];
+  try {
+    namePromises = response.map((item) => getName(item.lk));
+  } catch (error) {
+    return [];
+  }
   const names = await Promise.all(namePromises);
   const result = response.map((item, index) => ({ ...item, name: names[index] }));
   result.sort((a, b) => a.name.localeCompare(b.name));
