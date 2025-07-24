@@ -1,6 +1,6 @@
 import Peer from "components/peer";
 import ThreeDay from "components/threeDay";
-import { LoadWeatherVisualCrossingResponse } from "lib/weather";
+import { LoadWeatherResponse } from "lib/weather";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -12,7 +12,7 @@ export default async function Calendar({
   tomorrow,
   params: { lk, ts, view, unit },
 }: {
-  hoursData: LoadWeatherVisualCrossingResponse;
+  hoursData: LoadWeatherResponse;
   yesterday: Date;
   today: Date;
   tomorrow: Date;

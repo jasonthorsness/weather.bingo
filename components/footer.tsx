@@ -10,8 +10,8 @@ export default function Component() {
         SingleStore
       </a>
       , and{" "}
-      <a className="underline" target="_blank" href="https://www.visualcrossing.com">
-        Visual Crossing Weather
+      <a className="underline" target="_blank" href="https://www.open-meteo.com">
+        Open Meteo Weather
       </a>
       . Copyright 2024{" "}
       <a className="underline" target="_blank" href="https://www.jasonthorsness.com">

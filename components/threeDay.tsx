@@ -1,14 +1,15 @@
 import React from "react";
 import WeatherIcon from "components/weatherIcon";
 import {
-  LoadWeatherVisualCrossingResponse,
-  LoadWeatherVisualCrossingDay,
+  WeatherIconName,
+  LoadWeatherResponse,
+  LoadWeatherDay,
   getAqiClassNames,
   averageIt,
 } from "lib/weather";
 
 interface ThreeDayProps {
-  data: LoadWeatherVisualCrossingResponse;
+  data: LoadWeatherResponse;
   yesterday: Date;
   today: Date;
   tomorrow: Date;
@@ -36,7 +37,7 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
     data: {
       min: number;
       max: number;
-      icon: VisualCrossingIconName;
+      icon: WeatherIconName;
       aqius: number;
     },
     celsius: boolean
@@ -76,11 +77,9 @@ const Weeks: React.FC<ThreeDayProps> = ({ data, yesterday, today, tomorrow, cels
     );
   };
 
-  const yesterdayData: LoadWeatherVisualCrossingDay =
-    data.daysKeyed[yesterday.toISOString().split("T")[0]];
-  const todayData: LoadWeatherVisualCrossingDay = data.daysKeyed[today.toISOString().split("T")[0]];
-  const tomorrowData: LoadWeatherVisualCrossingDay =
-    data.daysKeyed[tomorrow.toISOString().split("T")[0]];
+  const yesterdayData: LoadWeatherDay = data.daysKeyed[yesterday.toISOString().split("T")[0]];
+  const todayData: LoadWeatherDay = data.daysKeyed[today.toISOString().split("T")[0]];
+  const tomorrowData: LoadWeatherDay = data.daysKeyed[tomorrow.toISOString().split("T")[0]];
 
   if (
     typeof yesterdayData.hours === "undefined" ||

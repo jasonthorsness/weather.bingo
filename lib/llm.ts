@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import clientPromise from "lib/mongodb";
 import OpenAI from "openai";
-import { LoadWeatherVisualCrossingDay, averageIt, formatDateForAPI } from "./weather";
+import { LoadWeatherDay, averageIt, formatDateForAPI } from "./weather";
 
 const openai = new OpenAI();
 
@@ -175,7 +175,7 @@ async function putCache(
 export async function getAndCacheLLM(
   cityName: string,
   now: Date,
-  daysData: LoadWeatherVisualCrossingDay[],
+  daysData: LoadWeatherDay[],
   prefersCelsius: boolean,
   onlyCache: boolean = false
 ): Promise<{ watson: string; amy: string; core: string }> {
@@ -211,8 +211,6 @@ export async function getAndCacheLLM(
       aqius: day.aqius,
     };
   });
-
-  console.log(newDaysData);
 
   if (view === "threeday") {
     newDaysData = newDaysData.map((day: any) => {
@@ -250,12 +248,11 @@ export async function getAndCacheLLM(
     JSON.stringify(forecast),
     prefersCelsius
   );
-  console.log(request);
+
   const requestString = JSON.stringify(request);
   const requestHash = crypto.createHash("sha256").update(requestString).digest("hex");
   let cachedResponse = await getCache(requestHash);
   if (cachedResponse) {
-    console.log(cachedResponse);
     console.log("Using cached LLM response");
     return cachedResponse;
   }

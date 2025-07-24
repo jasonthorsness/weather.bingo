@@ -1,9 +1,9 @@
 import React from "react";
 import WeatherIcon from "components/weatherIcon";
-import { LoadWeatherVisualCrossingResponse, getAqiClassNames } from "lib/weather";
+import { LoadWeatherResponse, getAqiClassNames } from "lib/weather";
 
 interface DayProps {
-  data: LoadWeatherVisualCrossingResponse;
+  data: LoadWeatherResponse;
   day: Date;
   month: boolean;
   bottom: boolean;
@@ -32,11 +32,15 @@ const Day: React.FC<DayProps> = ({ data, day, month, bottom, right, celsius, tod
   if (data === undefined) {
     return <div></div>;
   }
+
   let dayData = data.daysKeyed[day.toISOString().split("T")[0]];
 
-  const tempmin = celsius ? ((dayData.tempmin - 32) * 5) / 9 : dayData.tempmin;
-  const tempmax = celsius ? ((dayData.tempmax - 32) * 5) / 9 : dayData.tempmax;
-  const aqius = dayData.aqius;
+  const tempmin =
+    dayData == null ? "" : Math.round(celsius ? ((dayData.tempmin - 32) * 5) / 9 : dayData.tempmin);
+  const tempmax =
+    dayData == null ? "" : Math.round(celsius ? ((dayData.tempmax - 32) * 5) / 9 : dayData.tempmax);
+  const aqius = dayData == null ? null : dayData.aqius;
+  const icon = dayData == null ? "" : dayData.icon;
 
   return (
     <div
@@ -80,20 +84,16 @@ const Day: React.FC<DayProps> = ({ data, day, month, bottom, right, celsius, tod
       )}
       <div className={`grid grid-cols-[1fr,auto] sm:grid-cols-[1fr,auto] pb-4 -mt-0.5 sm:mt-0`}>
         <div className="my-auto flex flex-row-reverse items-center">
-          <WeatherIcon className="inline-block px-0 sm:px-1 w-full" name={dayData.icon} />
+          {icon && <WeatherIcon className="inline-block px-0 sm:px-1 w-full" name={icon} />}
         </div>
         <div className="flex items-center">
           <div className="flex flex-col leading-none pt-0.5 pl-0.5">
-            <div className="text-red-600 dark:text-red-500 font-bold text-right">
-              {Math.round(tempmax)}
-            </div>
-            <div className="text-blue-600 dark:text-blue-500 font-bold text-right">
-              {Math.round(tempmin)}
-            </div>
+            <div className="text-red-600 dark:text-red-500 font-bold text-right">{tempmax}</div>
+            <div className="text-blue-600 dark:text-blue-500 font-bold text-right">{tempmin}</div>
           </div>
         </div>
       </div>
-      {aqius != null && (
+      {aqius != null && aqius != 0 && (
         <div
           className={`absolute left-0.5 sm:left-1 bottom-0.5 text-[10px] sm:text-base text-bold rounded-sm px-0.5 font-bold ${getAqiClassNames(
             aqius

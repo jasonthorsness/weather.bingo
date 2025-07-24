@@ -1,6 +1,6 @@
 import Peer from "components/peer";
 import Weeks from "components/weeks";
-import { LoadWeatherVisualCrossingResponse } from "lib/weather";
+import { LoadWeatherResponse } from "lib/weather";
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 
@@ -12,7 +12,7 @@ export default async function Calendar({
   today,
 }: {
   params: { lk: string; ts: string; view: string; unit: string };
-  daysData: LoadWeatherVisualCrossingResponse;
+  daysData: LoadWeatherResponse;
   minRange: Date;
   maxRange: Date;
   today: Date;

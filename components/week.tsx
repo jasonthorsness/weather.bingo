@@ -1,9 +1,9 @@
 import React from "react";
 import Day from "./day";
-import { LoadWeatherVisualCrossingResponse } from "lib/weather";
+import { LoadWeatherResponse } from "lib/weather";
 
 interface WeekProps {
-  data: LoadWeatherVisualCrossingResponse;
+  data: LoadWeatherResponse;
   notBefore?: Date | undefined;
   date: Date;
   notAfter?: Date | undefined;
