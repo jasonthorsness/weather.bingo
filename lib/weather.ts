@@ -522,7 +522,7 @@ export async function getAndCacheData(
   );
   const forecastDays = Math.max(
     0,
-    Math.ceil((maxRange.getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000)) + 1
+    Math.ceil((maxRange.getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000)) + 3 // TODO WHY SO MANY?
   );
 
   // Fetch weather data from OpenMeteo
