@@ -1,5 +1,5 @@
 import clientPromise from "lib/mongodb";
-import { calculateAQI, convertOpenMeteoToAQI } from "./aqi";
+import { calculateAQI, convertOpenMeteoToAQI, calculateDailyAQI } from "./aqi";
 
 export type WeatherIconName =
   | "clear-day"
@@ -200,7 +200,7 @@ export function averageIt(hours: LoadWeatherHour[], night: boolean) {
       return {
         min: Math.min(acc.min, cur.temp),
         max: Math.max(acc.max, cur.temp),
-        aqius: Math.max(acc.aqius, cur.aqius),
+        aqius: Math.max(acc.aqius, cur.aqius), // Keep max for hourly aggregation
         icon: normalized,
       };
     },
@@ -243,21 +243,18 @@ function transformOpenMeteoData(
         .map((item) => item.idx);
 
       if (airQualityForDate.length > 0) {
-        // Calculate AQI from air quality components for the day
-        const dayAqiValues = airQualityForDate.map((idx) => {
-          const openMeteoData = {
-            pm2_5: airQualityData.hourly.pm2_5[idx] || 0,
-            pm10: airQualityData.hourly.pm10[idx] || 0,
-            nitrogen_dioxide: airQualityData.hourly.nitrogen_dioxide[idx] || 0,
-            ozone: airQualityData.hourly.ozone[idx] || 0,
-            sulphur_dioxide: airQualityData.hourly.sulphur_dioxide[idx] || 0,
-            carbon_monoxide: airQualityData.hourly.carbon_monoxide[idx] || 0,
-          };
-
-          const aqiData = convertOpenMeteoToAQI(openMeteoData);
-          return calculateAQI(aqiData);
-        });
-        aqius = Math.max(...dayAqiValues);
+        // Extract hourly pollutant data for the day
+        const dayPollutants = {
+          pm2_5: airQualityForDate.map(idx => airQualityData.hourly.pm2_5[idx] || 0),
+          pm10: airQualityForDate.map(idx => airQualityData.hourly.pm10[idx] || 0),
+          ozone: airQualityForDate.map(idx => airQualityData.hourly.ozone[idx] || 0),
+          carbon_monoxide: airQualityForDate.map(idx => airQualityData.hourly.carbon_monoxide[idx] || 0),
+          sulphur_dioxide: airQualityForDate.map(idx => airQualityData.hourly.sulphur_dioxide[idx] || 0),
+          nitrogen_dioxide: airQualityForDate.map(idx => airQualityData.hourly.nitrogen_dioxide[idx] || 0)
+        };
+        
+        // Calculate proper daily AQI using EPA formulas
+        aqius = calculateDailyAQI(dayPollutants);
       }
 
       // Map weather code to icon
@@ -317,7 +314,29 @@ function transformOpenMeteoData(
       if (hours.length === 0) return;
 
       const temps = hours.map((h) => h.temp);
-      const aqiusValues = hours.map((h) => h.aqius);
+      
+      // Calculate proper daily AQI from hourly air quality data
+      const dateHourlyAQ = airQualityData.hourly.time
+        .map((time, idx) => ({ time, idx }))
+        .filter((item) => item.time.startsWith(date))
+        .map((item) => item.idx);
+      
+      let dailyAqius = 0;
+      if (dateHourlyAQ.length > 0) {
+        const dayPollutants = {
+          pm2_5: dateHourlyAQ.map(idx => airQualityData.hourly.pm2_5[idx] || 0),
+          pm10: dateHourlyAQ.map(idx => airQualityData.hourly.pm10[idx] || 0),
+          ozone: dateHourlyAQ.map(idx => airQualityData.hourly.ozone[idx] || 0),
+          carbon_monoxide: dateHourlyAQ.map(idx => airQualityData.hourly.carbon_monoxide[idx] || 0),
+          sulphur_dioxide: dateHourlyAQ.map(idx => airQualityData.hourly.sulphur_dioxide[idx] || 0),
+          nitrogen_dioxide: dateHourlyAQ.map(idx => airQualityData.hourly.nitrogen_dioxide[idx] || 0)
+        };
+        dailyAqius = calculateDailyAQI(dayPollutants);
+      } else {
+        // Fallback to max of hourly values if no air quality data
+        const aqiusValues = hours.map((h) => h.aqius);
+        dailyAqius = Math.max(...aqiusValues);
+      }
 
       // Use averageIt function for icon selection
       const averaged = averageIt(hours, false);
@@ -327,7 +346,7 @@ function transformOpenMeteoData(
         tempmax: Math.max(...temps),
         tempmin: Math.min(...temps),
         icon: averaged.icon,
-        aqius: Math.max(...aqiusValues),
+        aqius: dailyAqius,
         hours: hours,
       });
     });

@@ -55,6 +55,64 @@ export function calculateAQI(inputs: PollutantConcentrations): number {
 }
 
 /**
+ * Calculate proper daily AQI using EPA formulas:
+ * - PM2.5 & PM10: 24-hour average
+ * - O3 & CO: rolling 8-hour average (max of all 8h periods)
+ * - SO2 & NO2: hourly maximum
+ */
+export function calculateDailyAQI(hourlyData: {
+  pm2_5: number[];
+  pm10: number[];
+  ozone: number[];
+  carbon_monoxide: number[];
+  sulphur_dioxide: number[];
+  nitrogen_dioxide: number[];
+}): number {
+  const { pm2_5, pm10, ozone, carbon_monoxide, sulphur_dioxide, nitrogen_dioxide } = hourlyData;
+  
+  if (pm2_5.length === 0) return 0;
+  
+  // PM2.5 & PM10: 24-hour average
+  const pm25_avg = pm2_5.reduce((sum, val) => sum + val, 0) / pm2_5.length;
+  const pm10_avg = pm10.reduce((sum, val) => sum + val, 0) / pm10.length;
+  
+  // O3 & CO: rolling 8-hour average (take max)
+  const get8HourMax = (values: number[]): number => {
+    if (values.length < 8) {
+      // If less than 8 hours, just average what we have
+      return values.reduce((sum, val) => sum + val, 0) / values.length;
+    }
+    
+    let max8HourAvg = 0;
+    for (let i = 0; i <= values.length - 8; i++) {
+      const slice = values.slice(i, i + 8);
+      const avg = slice.reduce((sum, val) => sum + val, 0) / 8;
+      max8HourAvg = Math.max(max8HourAvg, avg);
+    }
+    return max8HourAvg;
+  };
+  
+  const o3_8h_max = get8HourMax(ozone);
+  const co_8h_max = get8HourMax(carbon_monoxide);
+  
+  // SO2 & NO2: hourly maximum
+  const so2_max = Math.max(...sulphur_dioxide);
+  const no2_max = Math.max(...nitrogen_dioxide);
+  
+  // Convert to AQI format and calculate
+  const aqiInputs: PollutantConcentrations = {
+    pm25: pm25_avg,
+    pm10: pm10_avg,
+    o3: o3_8h_max * 0.509, // Convert µg/m³ to ppb
+    co: co_8h_max / 1150,  // Convert µg/m³ to ppm
+    so2: so2_max * 0.382, // Convert µg/m³ to ppb
+    no2: no2_max * 0.532  // Convert µg/m³ to ppb
+  };
+  
+  return calculateAQI(aqiInputs);
+}
+
+/**
  * Convert OpenMeteo air quality data to AQI-compatible format
  * OpenMeteo provides concentrations in µg/m³, we need to convert some to ppb/ppm
  */
